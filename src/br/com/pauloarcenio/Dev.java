@@ -1,16 +1,34 @@
-
 package br.com.pauloarcenio;
 
-public class Dev {
-    
-    private String nome;
-    private Mentoria mentoria;
-    private Curso curso;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
-    public Dev(String nome, Mentoria mentoria, Curso curso) {
-        this.nome = nome;
-        this.mentoria = mentoria;
-        this.curso = curso;
+public class Dev {
+
+    private String nome;
+    private Set<Conteudo> conteudosInscritos = new LinkedHashSet<>();
+    private Set<Conteudo> conteudosConcluidos = new LinkedHashSet<>();
+
+    public void inscricaoBootcamp(Bootcamp bootcamp) {
+        this.conteudosInscritos.addAll(bootcamp.getConteudos());
+        bootcamp.getDevsInscritos().add(this);
+    }
+
+    public void progredir() {
+        Optional<Conteudo> conteudo = this.conteudosInscritos.stream().findFirst();
+        if(conteudo.isPresent()){
+            this.conteudosConcluidos.add(conteudo.get());
+            this.conteudosInscritos.remove(conteudo.get());
+        }else {
+            System.err.println("Você não está inscrito em conteúdo nenhum!");
+        }
+    }
+
+    public double calcularTotalXp() {
+        return this.conteudosConcluidos.stream()
+                .mapToDouble(Conteudo::calcularXp).sum();
     }
 
     public String getNome() {
@@ -21,28 +39,50 @@ public class Dev {
         this.nome = nome;
     }
 
-    public Mentoria getMentoria() {
-        return mentoria;
+    public Set<Conteudo> getConteudosInscritos() {
+        return conteudosInscritos;
     }
 
-    public void setMentoria(Mentoria mentoria) {
-        this.mentoria = mentoria;
+    public void setConteudosInscritos(Set<Conteudo> conteudosInscritos) {
+        this.conteudosInscritos = conteudosInscritos;
     }
 
-    public Curso getCurso() {
-        return curso;
+    public Set<Conteudo> getConteudosConcluidos() {
+        return conteudosConcluidos;
     }
 
-    public void setCurso(Curso curso) {
-        this.curso = curso;
+    public void setConteudosConcluidos(Set<Conteudo> conteudosConcluidos) {
+        this.conteudosConcluidos = conteudosConcluidos;
     }
 
     @Override
-    public String toString() {
-        return "Dev{" + "nome=" + nome + ", mentoria=" + mentoria + ", curso=" + curso + '}';
+    public int hashCode() {
+        int hash = 7;
+        hash = 37 * hash + Objects.hashCode(this.nome);
+        hash = 37 * hash + Objects.hashCode(this.conteudosInscritos);
+        hash = 37 * hash + Objects.hashCode(this.conteudosConcluidos);
+        return hash;
     }
-    
-    private void inscrever(Curso curso, Mentoria mentoria){
-        
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Dev other = (Dev) obj;
+        if (!Objects.equals(this.nome, other.nome)) {
+            return false;
+        }
+        if (!Objects.equals(this.conteudosInscritos, other.conteudosInscritos)) {
+            return false;
+        }
+        return Objects.equals(this.conteudosConcluidos, other.conteudosConcluidos);
     }
+
 }

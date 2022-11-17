@@ -4,8 +4,6 @@ package br.com.pauloarcenio;
 
 public class Curso extends Conteudo {
     
-    
-    
     private int cargaHoraria;
 
     @Override
